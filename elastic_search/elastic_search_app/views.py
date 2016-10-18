@@ -32,7 +32,7 @@ from query import (
 __all__ = [
     'CreateSchema',
     'DeleteIndex',
-    'GetSimilarUsers',
+    'GetSimilarItems',
     'PushDataAndIndex',
     'UpdateDataEs',
     'GetSimilarFoodItems',
@@ -69,9 +69,9 @@ class DeleteIndex(APIView):
         return False
 
 
-class GetSimilarUsers(APIView):
+class GetSimilarItems(APIView):
     """
-    Get all the Similar users from Elastic Search
+    Get all the Similar items from Elastic Search
     """
     def post(self, request):
         index_name = request.data['index_name']
@@ -114,30 +114,3 @@ class UpdateDataEs(APIView):
                                         **update_data)
         return Response({'message': response}, status=HTTP_200_OK)
 
-
-class GetSimilarFoodItems(APIView):
-    # permission_classes = (hasValidAuthHeader,)
-
-    def get(self, request):
-        index_name = ES_RECIPE_INDEX_NAME
-        doc_type = ES_RECIPE_DOC_TYPE
-        keyword = request.query_params['keyword']
-        query = get_recipe_query(keyword)
-        obj = ElasticSearchQuery(CONNECTION_URL)
-        response = obj.get_similar_items(index_name, doc_type, **query)
-        serialize_data = recipe_response_serializer_rest(response)
-        return Response({'message': serialize_data}, status=HTTP_200_OK)
-
-
-class ExerciseSearch(APIView):
-    # permission_classes = (hasValidAuthHeader,)
-
-    def get(self, request):
-        index_name = ES_EXERCISE_INDEX_NAME
-        doc_type = ES_EXERCISE_DOC_TYPE
-        keyword = request.query_params['keyword']
-        query = get_recipe_query(keyword)
-        obj = ElasticSearchQuery(CONNECTION_URL)
-        response = obj.get_similar_items(index_name, doc_type, **query)
-        serialize_data = exercise_response_serializer(response)
-        return Response({'message': serialize_data}, status=HTTP_200_OK)
